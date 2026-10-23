@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempo Consciente</title>
+    <style>
+        :root {
+            --primary: #287a58; --secondary: #65b891; --accent: #e8b85d;
+            --background: #edf5ef; --surface: #fff; --text: #20352b;
+            --muted: #718078; --border: #dce8df;
+            --shadow: 0 15px 40px rgba(35,75,52,.10);
+        }
+        [data-theme="oceano"] {
+            --primary:#176b87; --secondary:#55b8ce; --accent:#f0bd65;
+            --background:#edf6fa; --surface:#fff; --text:#203744;
+            --muted:#718995; --border:#d9e8ee;
+            --shadow:0 15px 40px rgba(23,107,135,.10);
+        }
+        [data-theme="violeta"] {
+            --primary:#7251a3; --secondary:#b29add; --accent:#edb86c;
+            --background:#f4effa; --surface:#fff; --text:#332843;
+            --muted:#81758f; --border:#e5dced;
+            --shadow:0 15px 40px rgba(114,81,163,.10);
+        }
+        [data-theme="coral"] {
+            --primary:#c65c50; --secondary:#ed9a83; --accent:#e5b94e;
+            --background:#fff2ed; --surface:#fff; --text:#492d2b;
+            --muted:#927572; --border:#f1ded7;
+            --shadow:0 15px 40px rgba(198,92,80,.10);
+        }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body {
+            min-height:100vh; padding:28px 16px;
+            font-family:"Segoe UI",Arial,sans-serif; color:var(--text);
+            background:var(--background); transition:background .3s,color .3s;
+        }
+        .container { max-width:780px; margin:auto; }
+        header { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:22px; }
+        .brand { display:flex; align-items:center; gap:11px; }
+        .brand-icon { display:grid; place-items:center; width:44px; height:44px; color:white; background:var(--primary); border-radius:14px; font-size:24px; }
+        .brand h1 { font-size:18px; }
+        .brand p { margin-top:3px; color:var(--muted); font-size:12px; }
+        select,input { font:inherit; }
+        select { padding:10px; max-width:150px; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:10px; }
+        .card { padding:28px; margin-bottom:18px; background:var(--surface); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); }
+        .tag { display:inline-block; padding:7px 11px; color:var(--primary); background:var(--background); border-radius:20px; font-size:12px; font-weight:700; }
+        h2 { margin-top:15px; font-size:clamp(26px,5vw,38px); line-height:1.2; letter-spacing:-1px; }
+        h2 span { color:var(--primary); }
+        .intro { margin-top:12px; color:var(--muted); font-size:15px; line-height:1.7; }
+        .input-panel { margin-top:23px; padding:18px; background:var(--background); border:1px solid var(--border); border-radius:15px; }
+        label { display:block; margin-bottom:10px; font-size:14px; font-weight:700; }
+        .input-row { display:flex; gap:10px; }
+        input { width:100%; min-width:0; padding:13px; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:10px; }
+        button { padding:13px 17px; color:white; background:var(--primary); border:0; border-radius:10px; font-weight:700; cursor:pointer; transition:opacity .2s,transform .2s; }
+        button:hover { opacity:.88; transform:translateY(-1px); }
+        .secondary-button { color:var(--primary); background:var(--background); border:1px solid var(--border); }
+        .hint { margin-top:8px; color:var(--muted); font-size:12px; }
+        #aviso { margin-top:12px; color:#b3473c; font-size:13px; }
+        #resultados { display:none; }
+        #resultados.visible { display:block; animation:aparecer .4s ease; }
+        @keyframes aparecer { from {opacity:0;transform:translateY(8px)} to {opacity:1;transform:translateY(0)} }
+        .section-title { margin-bottom:14px; font-size:20px; }
+        .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:11px; }
+        .stat { padding:16px; background:var(--background); border:1px solid var(--border); border-radius:14px; }
+        .stat-label { color:var(--muted); font-size:12px; }
+        .stat-number { display:block; margin-top:7px; color:var(--primary); font-size:27px; font-weight:800; }
+        .stat-unit { color:var(--muted); font-size:12px; }
+        .subsection { margin-top:22px; }
+        .subsection h3 { margin-bottom:9px; font-size:16px; }
+        .subsection p { color:var(--muted); font-size:14px; line-height:1.7; }
+        .bar-track { height:13px; margin:13px 0 8px; overflow:hidden; background:var(--background); border:1px solid var(--border); border-radius:20px; }
+        .bar-fill { width:0; height:100%; background:var(--secondary); border-radius:20px; transition:width .6s ease; }
+        .bar-caption { display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+        .challenge { padding:19px; background:var(--background); border:1px solid var(--border); border-radius:15px; }
+        .challenge select { width:100%; max-width:none; margin:8px 0 12px; }
+        .recovered { margin-top:13px; padding:14px; background:var(--surface); border-radius:12px; line-height:1.8; color:var(--muted); }
+        .recovered strong { color:var(--primary); font-size:22px; }
+        .quote { margin-top:22px; padding:22px; color:white; background:var(--primary); border-radius:16px; }
+        .quote-mark { color:var(--accent); font-size:30px; }
+        .quote p { margin-top:5px; font-size:16px; font-weight:600; line-height:1.7; }
+        .quote small { display:block; margin-top:12px; color:rgba(255,255,255,.75); font-size:12px; }
+        .actions { display:flex; justify-content:flex-end; margin-top:18px; }
+        footer { padding:8px 10px; color:var(--muted); text-align:center; font-size:12px; line-height:1.7; }
+        @media(max-width:560px) {
+            body { padding:17px 11px; }
+            header { align-items:flex-start; flex-direction:column; }
+            .card { padding:21px; }
+            .input-row { flex-direction:column; }
+            .input-row button { width:100%; }
+            .stats { grid-template-columns:1fr; }
+            .stat { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+            .stat-number { margin-top:0; }
+            .stat-unit { display:none; }
+        }
+    </style>
+</head>
+<body data-theme="natureza">
+<main class="container">
+    <header>
+        <div class="brand">
+            <div class="brand-icon">◷</div>
+            <div><h1>Tempo Consciente</h1><p>Uma reflexão sobre sua vida digital</p></div>
+        </div>
+        <select id="tema" aria-label="Escolher tema de cores">
+            <option value="natureza">🌿 Natureza</option>
+            <option value="oceano">🌊 Oceano</option>
+            <option value="violeta">💜 Violeta</option>
+            <option value="coral">🌅 Coral</option>
+        </select>
+    </header>
+
+    <section class="card">
+        <span class="tag">SEU TEMPO, SUAS ESCOLHAS</span>
+        <h2>Você está vivendo o seu dia ou apenas <span>rolando a tela?</span></h2>
+        <p class="intro">Descubra quanto tempo dedica às redes sociais. Mais do que contar horas, este simulador convida você a pensar sobre como deseja viver seu tempo.</p>
+
+        <div class="input-panel">
+            <label for="horas">Quantas horas por dia você passa nas redes sociais?</label>
+            <div class="input-row">
+                <input type="number" id="horas" min="0" max="24" step="0.5" placeholder="Ex.: 5">
+                <button id="calcular">Calcular meu tempo →</button>
+            </div>
+            <p class="hint">Informe um valor de 0 a 24 horas.</p>
+            <p id="aviso" aria-live="polite"></p>
+        </div>
+    </section>
+
+    <section class="card" id="resultados" aria-live="polite">
+        <h2 class="section-title">Seu tempo em números</h2>
+        <div class="stats">
+            <div class="stat"><span class="stat-label">Por dia</span><strong class="stat-number" id="diario">0</strong><span class="stat-unit">horas</span></div>
+            <div class="stat"><span class="stat-label">Por semana</span><strong class="stat-number" id="semanal">0</strong><span class="stat-unit">horas</span></div>
+            <div class="stat"><span class="stat-label">Em 30 dias</span><strong class="stat-number" id="mensal">0</strong><span class="stat-unit">horas</span></div>
+        </div>
+
+        <div class="subsection">
+            <h3>Quanto do seu dia fica na tela?</h3>
+            <p id="barraTexto"></p>
+            <div class="bar-track" role="progressbar" aria-label="Proporção do dia dedicada às redes sociais" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barra">
+                <div class="bar-fill" id="barraPreenchida"></div>
+            </div>
+            <div class="bar-caption"><span>0 horas</span><span>24 horas</span></div>
+        </div>
+
+        <div class="subsection">
+            <h3>Um ano de uso</h3>
+            <p id="anoTexto"></p>
+        </div>
+
+        <div class="subsection">
+            <h3>Uma reflexão sobre seus hábitos</h3>
+            <p id="comparacao"></p>
+            <p id="reflexao" style="margin-top:8px;"></p>
+        </div>
+
+        <div class="subsection challenge">
+            <h3>Experimente recuperar um pouco do seu tempo</h3>
+            <p>E se você reduzisse parte do uso diário? Escolha uma redução e veja quanto tempo poderia reservar para outras atividades.</p>
+            <label for="reducao" style="margin-top:12px;">Simular redução diária</label>
+            <select id="reducao">
+                <option value="0.5">30 minutos por dia</option>
+                <option value="1">1 hora por dia</option>
+                <option value="1.5">1 hora e 30 minutos por dia</option>
+                <option value="2">2 horas por dia</option>
+            </select>
+            <div class="recovered" id="recuperado" aria-live="polite">Escolha uma redução para ver o resultado.</div>
+        </div>
+
+        <div class="quote">
+            <div class="quote-mark">“</div>
+            <p id="frase"></p>
+            <small>Uma pausa para pensar sobre o que realmente importa.</small>
+        </div>
+
+        <div class="actions"><button class="secondary-button" id="limpar">↺ Refazer cálculo</button></div>
+    </section>
+
+    <footer>Projeto educativo sobre hábitos digitais. Os dados de comparação são valores simulados fornecidos pela atividade, não uma orientação médica.</footer>
+</main>
+
+<script>
+    const dadosPesquisa = {
+        mediaNacionalDiaria: 4,
+        alertaSaude: 6,
+        sugestoes: [
+            { limite: 2, mensagem: "Seu tempo de uso é relativamente baixo em comparação com a média usada nesta atividade. Continue reservando espaço para outras experiências, interesses e descanso." },
+            { limite: 5, mensagem: "Seu uso está próximo da média indicada na atividade. Vale pensar se as redes estão acrescentando algo ao seu dia ou ocupando momentos que você gostaria de viver de outra forma." },
+            { limite: 24, mensagem: "Seu tempo de uso é elevado. Reflita se ele está tomando espaço do sono, dos estudos, dos seus interesses ou das relações pessoais. Pequenas pausas podem ajudar a encontrar equilíbrio." }
+        ]
+    };
+
+    const frases = [
+        "O tempo é feito de momentos. Estar presente é uma forma de não deixar a vida passar despercebida.",
+        "Nem tudo que prende nossa atenção merece nosso tempo. Escolher onde olhar também é escolher como viver.",
+        "A vida não acontece apenas na tela. Há encontros, descobertas e pequenas alegrias esperando por nossa presença.",
+        "Não precisamos abandonar o mundo digital, mas lembrar que ele é uma parte da vida, não a vida inteira.",
+        "O tempo que recuperamos não precisa ser preenchido. Às vezes, descansar e simplesmente existir já é suficiente."
+    ];
+
+    const campoHoras = document.querySelector("#horas");
+    const resultados = document.querySelector("#resultados");
+    const aviso = document.querySelector("#aviso");
+    let horasAtuais = 0;
+    let indiceFrase = -1;
+
+    document.querySelector("#tema").addEventListener("change", function () {
+        document.body.dataset.theme = this.value;
+    });
+
+    function formatar(numero) {
+        return Number(numero.toFixed(1)).toLocaleString("pt-BR");
+    }
+
+    function atualizarReducao() {
+        const reducao = Number(document.querySelector("#reducao").value);
+        const recuperadasPorDia = Math.min(reducao, horasAtuais);
+        const semana = recuperadasPorDia * 7;
+        const mes = recuperadasPorDia * 30;
+        const ano = recuperadasPorDia * 365;
+
+        document.querySelector("#recuperado").innerHTML = `
+            Se você reduzisse esse tempo:<br><br>
+            <strong>${formatar(semana)} horas</strong> recuperadas em uma semana.<br>
+            <strong>${formatar(mes)} horas</strong> recuperadas em 30 dias.<br>
+            <strong>${formatar(ano)} horas</strong> recuperadas em um ano.<br><br>
+            Esse tempo poderia ser dedicado a atividades que você escolhesse.
+        `;
+    }
+
+    document.querySelector("#reducao").addEventListener("change", atualizarReducao);
+
+    document.querySelector("#calcular").addEventListener("click", function () {
+        const texto = campoHoras.value;
+        const horas = Number(texto);
+
+        if (texto.trim() === "" || !Number.isFinite(horas) || horas < 0 || horas > 24) {
+            aviso.innerText = "Digite um número válido entre 0 e 24.";
+            resultados.classList.remove("visible");
+            return;
+        }
+
+        aviso.innerText = "";
+        horasAtuais = horas;
+
+        const semana = horas * 7;
+        const mes = horas * 30;
+        const ano = horas * 365;
+
+        document.querySelector("#diario").innerText = formatar(horas);
+        document.querySelector("#semanal").innerText = formatar(semana);
+        document.querySelector("#mensal").innerText = formatar(mes);
+
+        const porcentagem = horas / 24 * 100;
+        document.querySelector("#barraPreenchida").style.width = porcentagem + "%";
+        document.querySelector("#barra").setAttribute("aria-valuenow", Math.round(porcentagem));
+        document.querySelector("#barraTexto").innerText =
+            `Isso corresponde a ${formatar(porcentagem)}% das 24 horas do dia.`;
+
+        document.querySelector("#anoTexto").innerText =
+            `Em um ano, esse hábito somaria ${formatar(ano)} horas, o equivalente a aproximadamente ${formatar(ano / 24)} dias inteiros de uso acumulado.`;
+
+        let comparacao;
+        if (horas > dadosPesquisa.mediaNacionalDiaria) {
+            comparacao = `Seu uso está acima da média de ${dadosPesquisa.mediaNacionalDiaria} horas diárias indicada na base desta atividade.`;
+        } else if (horas < dadosPesquisa.mediaNacionalDiaria) {
+            comparacao = `Seu uso está abaixo da média de ${dadosPesquisa.mediaNacionalDiaria} horas diárias indicada na base desta atividade.`;
+        } else {
+            comparacao = `Seu uso corresponde à média de ${dadosPesquisa.mediaNacionalDiaria} horas diárias indicada na base desta atividade.`;
+        }
+        document.querySelector("#comparacao").innerText = comparacao;
+
+        let mensagem;
+        if (horas <= dadosPesquisa.sugestoes[0].limite) {
+            mensagem = dadosPesquisa.sugestoes[0].mensagem;
+        } else if (horas <= dadosPesquisa.sugestoes[1].limite) {
+            mensagem = dadosPesquisa.sugestoes[1].mensagem;
+        } else {
+            mensagem = dadosPesquisa.sugestoes[2].mensagem;
+        }
+
+        if (horas >= dadosPesquisa.alertaSaude) {
+            mensagem += ` Seu uso também alcança o valor de alerta de ${dadosPesquisa.alertaSaude} horas definido na base da atividade.`;
+        }
+        document.querySelector("#reflexao").innerText = mensagem;
+
+        indiceFrase = (indiceFrase + 1) % frases.length;
+        document.querySelector("#frase").innerText = frases[indiceFrase];
+
+        atualizarReducao();
+        resultados.classList.add("visible");
+        resultados.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.querySelector("#limpar").addEventListener("click", function () {
+        campoHoras.value = "";
+        aviso.innerText = "";
+        resultados.classList.remove("visible");
+        document.querySelector("#barraPreenchida").style.width = "0%";
+        document.querySelector("#barra").setAttribute("aria-valuenow", "0");
+        campoHoras.focus();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+</script>
+</body>
+</html>
